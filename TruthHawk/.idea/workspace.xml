@@ -25,14 +25,14 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Project Files\IntelliJ\TruthHawk\libs\driver" />
+      <recent name="E:\Project Files\IntelliJ\TruthHawk\libs" />
+    </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="objects" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\Project Files\IntelliJ\TruthHawk\libs" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\Project Files\IntelliJ\TruthHawk\libs\driver" />
       <recent name="E:\Project Files\IntelliJ\TruthHawk\libs" />
     </key>
   </component>

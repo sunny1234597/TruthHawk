@@ -4,6 +4,7 @@
 
 import objects.Comment
 import objects.CommentType
+import objects.News
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.openqa.selenium.By
@@ -55,8 +56,9 @@ fun main(args:Array<String>){
         }catch (ex:Exception){}
     }
 
-    var Comments = mutableListOf<Comment>()
+    var ParsedNewsList = mutableListOf<News>() //기사들
     newsLinks.forEach{
+        var Comments = mutableListOf<Comment>() //기사 당 댓글 리스트
         //댓글 수집 단계
         Client.get(it)
         WebDriverWait(Client, 20).until(ExpectedConditions.visibilityOfElementLocated(By.className("u_cbox_comment_box"))) //로딩까지 대기
@@ -66,11 +68,8 @@ fun main(args:Array<String>){
             }catch (ex:Exception){}
         }
         var NewsDoc:Document = Jsoup.parse(Client.pageSource)
-        println("\n\n새로운 뉴스 감지됨 :\n    '${NewsDoc.select("title")[0].text()}'에 관해 전처리 시작합니다.")
         var NewsCommentsDoc = NewsDoc.select(".u_cbox_comment_box")
-        println("    ${NewsCommentsDoc.size}개의 댓글 감지")
 
-        var NewsComments:MutableList<Comment> = mutableListOf()
         //댓글 전처리(객체화) 단계
         NewsCommentsDoc.forEach(){
             try {
@@ -85,12 +84,19 @@ fun main(args:Array<String>){
             }
             catch(ex:Exception){}
         }
+        Client.get(Client.findElement(By.className("media_end_head_btn_type")).getAttribute("href"))
+        WebDriverWait(Client, 20).until(ExpectedConditions.visibilityOfElementLocated(By.className("u_likeit_text"))) //반응 수 확인을 위해 본 기사 로딩까지 대기
+        var NewsReactionCount =  Client.findElement(By.cssSelector(".u_likeit_text._count.num")).text.replace(",", "").toInt()
+        ParsedNewsList.add(News(Client.currentUrl, NewsDoc.select("title")[0].text(), NewsReactionCount, Comments.toTypedArray()))
     }
 
     //댓글 분석 단계
-    println("총 ${Comments.size}개의 댓글 발견")
-    Comments.forEach{
-        println("\n    ${it.ID} | ${it.WrittenTime} | ${it.NewsTitle}(${it.URL})\n        ${it.Content}\n        좋아요 : ${it.HandUp} / 싫어요 : ${it.HandDown}")
+    println("총 ${ParsedNewsList.size}개의 기사 발견\n\n")
+    ParsedNewsList.forEach{
+        println("  ${it.newsTitle} | URL : ${it.newsURL} | 댓글 : ${it.Comments.size}개 | 반응수 : ${it.newsReaction}개")
+        it.Comments.forEach {
+            println("\n    ${it.ID} | ${it.WrittenTime} | ${it.NewsTitle}(${it.URL})\n        ${it.Content}\n        좋아요 : ${it.HandUp} / 싫어요 : ${it.HandDown}")
+        }
     }
 
 }
